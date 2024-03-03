@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01-create-types-table
+      author: polezhaiev
+      changes:
+        - createTable:
+            tableName: types
+            columns:
+              - column:
+                  name: id
+                  type: bigInt
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)

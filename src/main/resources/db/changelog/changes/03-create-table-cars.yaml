@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03-create-table-cars
+      author: polezhaiev
+      changes:
+        - createTable:
+            tableName: cars
+            columns:
+              - column:
+                  name: id
+                  type: bigInt
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: model
+                  type: VARCHAR(255)
+              - column:
+                  name: brand
+                  type: VARCHAR(255)
+              - column:
+                  name: type_id
+                  type: bigInt
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cars_types
+                    referencedTableName: types
+                    referencedColumnNames: id
+                    primaryKey: true
+              - column:
+                  name: daily_fee
+                  type: DOUBLE
+              - column:
+                  name: inventory
+                  type: INT
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
