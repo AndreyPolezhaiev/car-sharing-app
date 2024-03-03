@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02-insert-types-to-db
+      author: polezhaiev
+      changes:
+        - insert:
+            tableName: types
+            columns:
+              column: {name: name, value: "SEDAN"}
+        - insert:
+            tableName: types
+            columns:
+              column: { name: name, value: "SUV" }
+        - insert:
+            tableName: types
+            columns:
+              column: { name: name, value: "HATCHBACK" }
+        - insert:
+            tableName: types
+            columns:
+              column: { name: name, value: "UNIVERSAL" }
