@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  mysql-db:
+    image: mysql:8
+    container_name: mysql-db
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+    env_file:
+      - ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+
+  car-sharing-app:
+    depends_on:
+      - mysql-db
+    container_name: car-sharing-app
+    restart: unless-stopped
+    build: .
+    env_file:
+      - ./.env
+    ports:
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+      - $DEBUG_PORT:$DEBUG_PORT
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url" : "jdbc:mysql://mysql-db:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE",
+        "spring.datasource.username" : "$MYSQLDB_USER",
+        "spring.datasource.password" : "$MYSQLDB_ROOT_PASSWORD",
+        "changeLogFile=classpath" : "/db/changelog/db.changelog-master.yaml",
+        "spring.jpa.hibernate.ddl-auto" : "validate",
+        "spring.jpa.show-sql" : "true"
+      }'
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
