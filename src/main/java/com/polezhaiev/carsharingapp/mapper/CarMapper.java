@@ -14,30 +14,12 @@ public interface CarMapper {
     @Mapping(target = "typeName", source = "type.name")
     CarDto toDto(Car car);
 
-    //    @AfterMapping
-    //    default void setTypeName(@MappingTarget CarDto carDto, Car car) {
-    //        String typeName = car.getType().getName();
-    //        carDto.setTypeName(typeName);
-    //    }
-
     @Mapping(target = "type", ignore = true)
     Car toModel(CreateCarRequestDto requestDto);
 
     @Mapping(target = "typeName", source = "type.name")
     CarSimpleInfoDto toCarSimpleInfoDto(Car car);
 
-    //    @AfterMapping
-    //    default void setTypeName(@MappingTarget CarSimpleInfoDto carDto, Car car) {
-    //        String typeName = car.getType().getName();
-    //        carDto.setTypeName(typeName);
-    //    }
-
     @Mapping(target = "typeName", source = "type.name")
     CarDetailedInfoDto toCarDetailedInfoDto(Car car);
-
-    //    @AfterMapping
-    //    default void setTypeName(@MappingTarget CarDetailedInfoDto carDto, Car car) {
-    //        String typeName = car.getType().getName();
-    //        carDto.setTypeName(typeName);
-    //    }
 }
