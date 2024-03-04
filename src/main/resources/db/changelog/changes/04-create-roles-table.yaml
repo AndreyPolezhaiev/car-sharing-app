@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04-create-roles-table
+      author: polezhaiev
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: bigInt
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
