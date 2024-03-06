@@ -30,6 +30,8 @@ services:
         "spring.datasource.password" : "$MYSQLDB_ROOT_PASSWORD",
         "changeLogFile=classpath" : "/db/changelog/db.changelog-master.yaml",
         "spring.jpa.hibernate.ddl-auto" : "validate",
-        "spring.jpa.show-sql" : "true"
+        "spring.jpa.show-sql" : "true",
+        "jwt.expiration" : "$JWT_EXPIRATION",
+        "jwt.secret" : "$JWT_SECRET_KEY"
       }'
       JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"

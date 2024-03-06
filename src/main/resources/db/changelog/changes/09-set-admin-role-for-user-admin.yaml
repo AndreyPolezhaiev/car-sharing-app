@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 09-set-admin-role-for-user-admin
+      author: polezhaiev
+      changes:
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: role_id
+                  valueNumeric: 1
