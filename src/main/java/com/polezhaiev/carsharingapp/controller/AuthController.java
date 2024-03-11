@@ -4,7 +4,7 @@ import com.polezhaiev.carsharingapp.dto.user.UserLoginRequestDto;
 import com.polezhaiev.carsharingapp.dto.user.UserLoginResponseDto;
 import com.polezhaiev.carsharingapp.dto.user.UserRegistrationRequestDto;
 import com.polezhaiev.carsharingapp.dto.user.UserResponseDto;
-import com.polezhaiev.carsharingapp.exception.RegistrationException;
+import com.polezhaiev.carsharingapp.exception.app.RegistrationException;
 import com.polezhaiev.carsharingapp.security.AuthenticationService;
 import com.polezhaiev.carsharingapp.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;

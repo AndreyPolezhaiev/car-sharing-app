@@ -2,7 +2,7 @@ package com.polezhaiev.carsharingapp.service.user.impl;
 
 import com.polezhaiev.carsharingapp.dto.user.UserRegistrationRequestDto;
 import com.polezhaiev.carsharingapp.dto.user.UserResponseDto;
-import com.polezhaiev.carsharingapp.exception.RegistrationException;
+import com.polezhaiev.carsharingapp.exception.app.RegistrationException;
 import com.polezhaiev.carsharingapp.mapper.UserMapper;
 import com.polezhaiev.carsharingapp.model.Role;
 import com.polezhaiev.carsharingapp.model.User;
