@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10-create-rentals-table
+      author: polezhaiev
+      changes:
+        - createTable:
+            tableName: rentals
+            columns:
+              - column:
+                  name: id
+                  type: bigInt
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: rental_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: return_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: actual_return_date
+                  type: DATE
+              - column:
+                  name: car_id
+                  type: bigInt
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_rentals_cars
+                    referencedTableName: cars
+                    referencedColumnNames: id
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: bigInt
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_rentals_users
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    primaryKey: true
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

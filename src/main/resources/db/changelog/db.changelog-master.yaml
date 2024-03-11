@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/changes/08-add-user-with-role-admin.yaml
   - include:
       file: db/changelog/changes/09-set-admin-role-for-user-admin.yaml
+  - include:
+      file: db/changelog/changes/10-create-rentals-table.yaml
