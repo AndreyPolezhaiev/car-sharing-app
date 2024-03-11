@@ -4,7 +4,7 @@ import com.polezhaiev.carsharingapp.dto.car.CarDetailedInfoDto;
 import com.polezhaiev.carsharingapp.dto.car.CarDto;
 import com.polezhaiev.carsharingapp.dto.car.CarSimpleInfoDto;
 import com.polezhaiev.carsharingapp.dto.car.CreateCarRequestDto;
-import com.polezhaiev.carsharingapp.exception.EntityNotFoundException;
+import com.polezhaiev.carsharingapp.exception.app.EntityNotFoundException;
 import com.polezhaiev.carsharingapp.mapper.CarMapper;
 import com.polezhaiev.carsharingapp.model.Car;
 import com.polezhaiev.carsharingapp.model.Type;
