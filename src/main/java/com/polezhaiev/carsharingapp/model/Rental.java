@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -25,13 +25,13 @@ public class Rental {
     private Long id;
 
     @Column(nullable = false, name = "rental_date")
-    private LocalDate rentalDate;
+    private LocalDateTime rentalDate;
 
     @Column(nullable = false, name = "return_date")
-    private LocalDate returnDate;
+    private LocalDateTime returnDate;
 
     @Column(name = "actual_return_date")
-    private LocalDate actualReturnDate;
+    private LocalDateTime actualReturnDate;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

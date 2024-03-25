@@ -24,13 +24,13 @@ databaseChangeLog:
                   type: bigInt
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_cars_types
-                    referencedTableName: types
+                    foreignKeyName: fk_cars_car_types
+                    referencedTableName: car_types
                     referencedColumnNames: id
                     primaryKey: true
               - column:
                   name: daily_fee
-                  type: DOUBLE
+                  type: DECIMAL
               - column:
                   name: inventory
                   type: INT

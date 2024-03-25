@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 10-create-rentals-table
+      id: 11-create-payments-table
       author: polezhaiev
       changes:
         - createTable:
-            tableName: rentals
+            tableName: payments
             columns:
               - column:
                   name: id
@@ -14,39 +14,36 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: rental_date
-                  type: DATETIME
+                  name: status
+                  type: ENUM('PENDING', 'PAID', 'CANCELLED')
                   constraints:
                     nullable: false
               - column:
-                  name: return_date
-                  type: DATETIME
+                  name: payment_type
+                  type: ENUM('PAYMENT', 'FINE')
                   constraints:
                     nullable: false
               - column:
-                  name: actual_return_date
-                  type: DATETIME
-              - column:
-                  name: car_id
+                  name: rental_id
                   type: bigInt
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_rentals_cars
-                    referencedTableName: cars
+                    foreignKeyName: fk_payments_rentals
+                    referencedTableName: rentals
                     referencedColumnNames: id
                     primaryKey: true
               - column:
-                  name: user_id
-                  type: bigInt
+                  name: session_url
+                  type: VARCHAR(500)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_rentals_users
-                    referencedTableName: users
-                    referencedColumnNames: id
-                    primaryKey: true
               - column:
-                  name: is_active
-                  type: boolean
-                  defaultValueBoolean: false
+                  name: session_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount_to_pay
+                  type: DECIMAL
                   constraints:
                     nullable: false

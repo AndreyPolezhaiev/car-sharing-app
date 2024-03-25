@@ -4,7 +4,7 @@ databaseChangeLog:
       author: polezhaiev
       changes:
         - createTable:
-            tableName: types
+            tableName: car_types
             columns:
               - column:
                   name: id

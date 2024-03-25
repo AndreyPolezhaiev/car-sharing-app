@@ -125,6 +125,12 @@
 			<artifactId>mapstruct</artifactId>
 			<version>${mapstract.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>24.14.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

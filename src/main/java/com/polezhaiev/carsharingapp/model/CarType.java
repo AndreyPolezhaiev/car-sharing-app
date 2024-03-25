@@ -10,8 +10,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "types")
-public class Type {
+@Table(name = "car_types")
+public class CarType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
