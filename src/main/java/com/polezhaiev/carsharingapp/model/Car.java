@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,10 +37,10 @@ public class Car {
     @JoinColumn(name = "type_id",
             nullable = false,
             unique = true)
-    private Type type;
+    private CarType type;
 
     @Column(nullable = false, name = "daily_fee")
-    private Double dailyFee;
+    private BigDecimal dailyFee;
 
     @Column(nullable = false)
     private int inventory;

@@ -1,9 +1,9 @@
 package com.polezhaiev.carsharingapp.dto.rental;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 public class RentalSetActualDateRequestDto {
-    private LocalDate actualDate;
+    private LocalDateTime actualDate;
 }

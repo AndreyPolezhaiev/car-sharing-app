@@ -7,7 +7,7 @@ import com.polezhaiev.carsharingapp.dto.car.CreateCarRequestDto;
 import com.polezhaiev.carsharingapp.exception.app.EntityNotFoundException;
 import com.polezhaiev.carsharingapp.mapper.CarMapper;
 import com.polezhaiev.carsharingapp.model.Car;
-import com.polezhaiev.carsharingapp.model.Type;
+import com.polezhaiev.carsharingapp.model.CarType;
 import com.polezhaiev.carsharingapp.repository.car.CarRepository;
 import com.polezhaiev.carsharingapp.repository.type.TypeRepository;
 import com.polezhaiev.carsharingapp.service.car.CarService;
@@ -45,7 +45,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarDto save(CreateCarRequestDto requestDto) {
         Car car = carMapper.toModel(requestDto);
-        Type type = typeRepository.findTypeByName(requestDto.getTypeName());
+        CarType type = typeRepository.findTypeByName(requestDto.getTypeName());
         car.setType(type);
         Car saved = carRepository.save(car);
         return carMapper.toDto(saved);
@@ -55,7 +55,7 @@ public class CarServiceImpl implements CarService {
     public CarDto updateCarById(Long id, CreateCarRequestDto requestDto) {
         Car car = carMapper.toModel(requestDto);
         car.setId(id);
-        Type type = typeRepository.findTypeByName(requestDto.getTypeName());
+        CarType type = typeRepository.findTypeByName(requestDto.getTypeName());
         car.setType(type);
         Car updated = carRepository.save(car);
         return carMapper.toDto(updated);

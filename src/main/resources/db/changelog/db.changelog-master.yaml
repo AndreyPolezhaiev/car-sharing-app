@@ -1,8 +1,8 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changes/01-create-types-table.yaml
+      file: db/changelog/changes/01-create-car-types-table.yaml
   - include:
-      file: db/changelog/changes/02-insert-types-to-db.yaml
+      file: db/changelog/changes/02-insert-car-types-to-db.yaml
   - include:
       file: db/changelog/changes/03-create-table-cars.yaml
   - include:
@@ -19,3 +19,5 @@ databaseChangeLog:
       file: db/changelog/changes/09-set-admin-role-for-user-admin.yaml
   - include:
       file: db/changelog/changes/10-create-rentals-table.yaml
+  - include:
+      file: db/changelog/changes/11-create-payments-table.yaml

@@ -1,13 +1,13 @@
 package com.polezhaiev.carsharingapp.dto.rental;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 public class RentalForUserResponseDto {
     private Long id;
-    private LocalDate rentalDate;
-    private LocalDate returnDate;
-    private LocalDate actualReturnDate;
+    private LocalDateTime rentalDate;
+    private LocalDateTime returnDate;
+    private LocalDateTime actualReturnDate;
     private Long carId;
 }
