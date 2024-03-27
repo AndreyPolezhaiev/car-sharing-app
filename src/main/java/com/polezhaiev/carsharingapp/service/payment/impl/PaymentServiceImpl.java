@@ -9,6 +9,7 @@ import com.polezhaiev.carsharingapp.model.Payment;
 import com.polezhaiev.carsharingapp.model.Rental;
 import com.polezhaiev.carsharingapp.repository.payment.PaymentRepository;
 import com.polezhaiev.carsharingapp.repository.rental.RentalRepository;
+import com.polezhaiev.carsharingapp.service.notification.NotificationService;
 import com.polezhaiev.carsharingapp.service.payment.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -39,8 +40,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RentalRepository rentalRepository;
     private final PaymentMapper paymentMapper;
+    private final NotificationService notificationService;
 
-    @Value("${STRIPE_SECRET_KEY}")
+    @Value("${stripe.secret-key}")
     private String stripeSecretKey;
 
     @PostConstruct
@@ -106,6 +108,7 @@ public class PaymentServiceImpl implements PaymentService {
             Duration duration = Duration.between(returnDate, actualReturnDate);
             dailyFee = dailyFee.multiply(BigDecimal.valueOf(FINE_MULTIPLIER));
             days = duration.toDays() + 1;
+            notificationService.sendMessageAboutOverdueRental(rental);
         }
 
         BigDecimal amountToPay = dailyFee.multiply(BigDecimal.valueOf(days));
@@ -154,7 +157,9 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new RuntimeException("There is no session by id " + sessionId));
         payment.setStatus(Payment.PaymentStatus.PAID);
-        return paymentMapper.toDto(paymentRepository.save(payment));
+        Payment saved = paymentRepository.save(payment);
+        notificationService.sendMessageAboutSuccessfulPayment(saved);
+        return paymentMapper.toDto(saved);
     }
 
     @Override
@@ -162,6 +167,8 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new RuntimeException("There is no session by id " + sessionId));
         payment.setStatus(Payment.PaymentStatus.CANCELLED);
-        return paymentMapper.toDto(paymentRepository.save(payment));
+        Payment saved = paymentRepository.save(payment);
+        notificationService.sendMessageAboutCancelledPayment(saved);
+        return paymentMapper.toDto(saved);
     }
 }

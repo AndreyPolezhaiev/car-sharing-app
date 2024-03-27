@@ -32,6 +32,9 @@ services:
         "spring.jpa.hibernate.ddl-auto" : "validate",
         "spring.jpa.show-sql" : "true",
         "jwt.expiration" : "$JWT_EXPIRATION",
-        "jwt.secret" : "$JWT_SECRET_KEY"
+        "jwt.secret" : "$JWT_SECRET_KEY",
+        "stripe.secret-key" : "$STRIPE_SECRET_KEY",
+        "bot.name" : "$BOT_NAME",
+        "bot.token" : "$BOT_TOKEN"
       }'
       JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
