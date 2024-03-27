@@ -16,6 +16,7 @@ import com.polezhaiev.carsharingapp.repository.car.CarRepository;
 import com.polezhaiev.carsharingapp.repository.rental.RentalRepository;
 import com.polezhaiev.carsharingapp.repository.rental.spec.RentalSpecificationBuilder;
 import com.polezhaiev.carsharingapp.repository.user.UserRepository;
+import com.polezhaiev.carsharingapp.service.notification.NotificationService;
 import com.polezhaiev.carsharingapp.service.rental.RentalService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class RentalServiceImpl implements RentalService {
     private final RentalMapper rentalMapper;
     private final UserRepository userRepository;
     private final RentalSpecificationBuilder specificationBuilder;
+    private final NotificationService notificationService;
 
     @Override
     public RentalForUserResponseDto createRental(Long userId, RentalRequestDto requestDto) {
@@ -57,6 +59,7 @@ public class RentalServiceImpl implements RentalService {
         carRepository.save(car);
         rental.setUser(user);
         Rental saved = rentalRepository.save(rental);
+        notificationService.sendMessageAboutNewRentalCreated(rental);
         return rentalMapper.toDtoWithoutUserId(saved);
     }
 
