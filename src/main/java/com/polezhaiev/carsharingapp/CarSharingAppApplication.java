@@ -8,8 +8,6 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, WebMvcAutoConfiguration.class})
-@ComponentScan(basePackages = {"com.polezhaiev.carsharingapp"})
 public class CarSharingAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(CarSharingAppApplication.class, args);
