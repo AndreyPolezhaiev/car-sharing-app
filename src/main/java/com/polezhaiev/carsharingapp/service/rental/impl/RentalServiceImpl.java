@@ -99,7 +99,7 @@ public class RentalServiceImpl implements RentalService {
 
         Car car = carRepository.findById(rental.getCar().getId()).orElseThrow(
                 () -> new EntityNotFoundException(
-                        "Can't find the car by id: " + rentalId
+                        "Can't find the car by id: " + rental.getCar().getId()
                 )
         );
         car.setInventory(car.getInventory() + 1);

@@ -7,7 +7,7 @@ created rentals, overdue rentals.
 
 ## **Technologies:**
 
-It was made with Spring Boot, Spring Security, Spring Data JPA, Stripe API, Telegram API, Java Core, OOP, Docker, Maven, Git and SQL.
+Spring Boot, Spring Security, Spring Data JPA, Stripe API, Telegram API, Hibernate, Java Core, OOP, Docker, Maven, Git and SQL.
 
 ## **Controllers:**
 

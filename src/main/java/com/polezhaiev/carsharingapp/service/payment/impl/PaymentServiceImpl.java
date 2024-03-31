@@ -28,6 +28,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public PaymentDto createPaymentSession(PaymentRequestDto requestDto) {
         Optional<Payment> paymentFromDb
                 = paymentRepository.findAllByRentalId(requestDto.getRentalId())
@@ -152,6 +154,7 @@ public class PaymentServiceImpl implements PaymentService {
         return payment;
     }
 
+    @Transactional
     @Override
     public PaymentDto setSuccessfulPayment(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId)
@@ -162,6 +165,7 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.toDto(saved);
     }
 
+    @Transactional
     @Override
     public PaymentDto setCancelledPayment(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId)
