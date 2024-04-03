@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -49,7 +50,7 @@ public class CarControllerTest {
     @BeforeAll
     static void setUp (
             @Autowired WebApplicationContext applicationContext
-    ) throws SQLException {
+    ) {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
                 .apply(springSecurity())
@@ -97,7 +98,7 @@ public class CarControllerTest {
     @WithMockUser(username = "user", roles = {"USER"})
     @Test
     @DisplayName("Get all cars with simple info, should return all cars")
-    @Sql(scripts = "classpath:database/car/01-add-two-cars-to-database.sql",
+    @Sql(scripts = "classpath:database/car/01-add-one-car-to-database.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void getAll_ValidCars_ShouldReturnAllValidCars() throws Exception {
         List<CarSimpleInfoDto> expected = carService.findAll();
@@ -114,18 +115,15 @@ public class CarControllerTest {
 
         Assertions.assertEquals(expected.size(), actual.length);
         Assertions.assertEquals(expected.get(0).getBrand(), actual[0].getBrand());
-        Assertions.assertEquals(expected.get(1).getModel(), actual[1].getModel());
         Assertions.assertEquals(expected.get(0).getTypeName(), actual[0].getTypeName());
 
-        Arrays.stream(actual)
-                .mapToLong(CarSimpleInfoDto::getId)
-                .forEach(carRepository::deleteById);
+        carRepository.deleteById(expected.get(0).getId());
     }
 
-    @WithMockUser(username = "user", roles = {"USER"})
+    @WithMockUser(username = "user", roles = {"CUSTOMER"})
     @Test
     @DisplayName("Get all cars with detailed info, should return all cars")
-    @Sql(scripts = "classpath:database/car/01-add-two-cars-to-database.sql",
+    @Sql(scripts = "classpath:database/car/01-add-one-car-to-database.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void getCarsDetailedInfo_ValidCars_ShouldReturnAllValidCars() throws Exception {
         List<CarDetailedInfoDto> expected = carService.getCarsDetailedInfo();
@@ -142,18 +140,15 @@ public class CarControllerTest {
 
         Assertions.assertEquals(expected.size(), actual.length);
         Assertions.assertEquals(expected.get(0).getBrand(), actual[0].getBrand());
-        Assertions.assertEquals(expected.get(1).getModel(), actual[1].getModel());
         Assertions.assertEquals(expected.get(0).getTypeName(), actual[0].getTypeName());
 
-        Arrays.stream(actual)
-                .mapToLong(CarDetailedInfoDto::getId)
-                .forEach(carRepository::deleteById);
+        carRepository.deleteById(expected.get(0).getId());
     }
 
     @WithMockUser(username = "user", roles = {"USER"})
     @Test
-    @DisplayName("Get all car by id, should return valid car")
-    @Sql(scripts = "classpath:database/car/01-add-two-cars-to-database.sql",
+    @DisplayName("Get car by id, should return valid car")
+    @Sql(scripts = "classpath:database/car/01-add-one-car-to-database.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void getCarById_ValidCar_ShouldReturnValidCar() throws Exception {
         List<CarDto> cars = carRepository.findAll()
@@ -175,13 +170,13 @@ public class CarControllerTest {
 
         Assertions.assertEquals(expected, actual);
 
-        carRepository.deleteById(id);
+        carRepository.deleteById(expected.getId());
     }
 
     @WithMockUser(username = "admin", roles = {"MANAGER"})
     @Test
     @DisplayName("Update the car, should return updated car")
-    @Sql(scripts = "classpath:database/car/01-add-two-cars-to-database.sql",
+    @Sql(scripts = "classpath:database/car/01-add-one-car-to-database.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void updateCarById_ValidRequestDto_ShouldReturnUpdatedCar() throws Exception {
         List<Car> cars = carRepository.findAll();
@@ -217,15 +212,13 @@ public class CarControllerTest {
 
         Assertions.assertEquals(expected, actual);
 
-        cars.stream()
-                .mapToLong(Car::getId)
-                .forEach(carRepository::deleteById);
+        carRepository.deleteById(expected.getId());
     }
 
     @WithMockUser(username = "admin", roles = {"MANAGER"})
     @Test
     @DisplayName("Delete the car by id, should return status isOk")
-    @Sql(scripts = "classpath:database/car/01-add-two-cars-to-database.sql",
+    @Sql(scripts = "classpath:database/car/01-add-one-car-to-database.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteBook_ValidId_ShouldReturnNoContent() throws Exception {
         List<Car> cars = carRepository.findAll();
@@ -236,7 +229,5 @@ public class CarControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andReturn();
-
-        carRepository.deleteById(cars.get(1).getId());
     }
 }

@@ -5,16 +5,15 @@ import com.polezhaiev.carsharingapp.model.Rental;
 import com.polezhaiev.carsharingapp.model.User;
 import com.polezhaiev.carsharingapp.repository.car.CarRepository;
 import com.polezhaiev.carsharingapp.repository.user.UserRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,12 +33,11 @@ public class RentalRepositoryTest {
             should return all valid rentals
         """)
     @Sql(scripts = {
-            "classpath:database/rental/01-add-one-car-to-database.sql",
-            "classpath:database/rental/02-add-one-user-to-database.sql"
+            "classpath:database/car/01-add-one-car-to-database.sql"
     },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void findAllByCategoriesId_WithValidIds_ShouldReturnAllValidBooks() {
-        Long userId = 2L;
+    public void findAllRentalsByUSerId_WithValidIds_ShouldReturnAllValidRentals() {
+        Long userId = 1L;
 
         List<Car> cars = carRepository.findAll();
         Optional<User> user = userRepository.findById(userId);
@@ -63,7 +61,6 @@ public class RentalRepositoryTest {
         assertEquals(saved, actual.get(0));
 
         rentalRepository.deleteById(saved.getId());
-        carRepository.deleteById(cars.get(0).getId());
-        userRepository.deleteById(userId);
+        carRepository.deleteById(actual.get(0).getCar().getId());
     }
 }

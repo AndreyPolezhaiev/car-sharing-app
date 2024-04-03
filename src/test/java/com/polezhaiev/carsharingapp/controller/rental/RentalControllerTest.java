@@ -3,10 +3,12 @@ package com.polezhaiev.carsharingapp.controller.rental;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polezhaiev.carsharingapp.dto.rental.RentalForUserResponseDto;
 import com.polezhaiev.carsharingapp.dto.rental.RentalRequestDto;
+import com.polezhaiev.carsharingapp.dto.rental.RentalResponseDto;
+import com.polezhaiev.carsharingapp.dto.rental.RentalSearchParametersDto;
 import com.polezhaiev.carsharingapp.dto.user.UserLoginRequestDto;
 import com.polezhaiev.carsharingapp.dto.user.UserLoginResponseDto;
-import com.polezhaiev.carsharingapp.dto.user.UserRegistrationRequestDto;
 import com.polezhaiev.carsharingapp.model.Car;
+import com.polezhaiev.carsharingapp.model.Rental;
 import com.polezhaiev.carsharingapp.model.User;
 import com.polezhaiev.carsharingapp.repository.car.CarRepository;
 import com.polezhaiev.carsharingapp.repository.rental.RentalRepository;
@@ -14,30 +16,39 @@ import com.polezhaiev.carsharingapp.repository.user.UserRepository;
 import com.polezhaiev.carsharingapp.security.AuthenticationService;
 import com.polezhaiev.carsharingapp.security.CustomUserDetailsService;
 import com.polezhaiev.carsharingapp.service.user.UserService;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.List;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RentalControllerTest {
     protected static MockMvc mockMvc;
@@ -49,8 +60,6 @@ public class RentalControllerTest {
     protected CarRepository carRepository;
     @Autowired
     protected UserRepository userRepository;
-    @Autowired
-    protected UserService userService;
     @Autowired
     protected CustomUserDetailsService customUserDetailsService;
     @Autowired
@@ -67,33 +76,24 @@ public class RentalControllerTest {
     }
 
     @Test
-//    @WithMockUser(username = "user", roles = {"CUSTOMER"})
     @DisplayName("Create the rental, should return the created rental")
     @Sql(scripts = {
-            "classpath:database/rental/01-add-one-car-to-database.sql"
+            "classpath:database/car/01-add-one-car-to-database.sql"
     },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void createRental_ValidRequestDto_ShouldReturnRental() throws Exception {
         List<Car> cars = carRepository.findAll();
 
-        UserRegistrationRequestDto userRegistrationRequestDto = new UserRegistrationRequestDto();
-        userRegistrationRequestDto.setEmail("alice@gmail.com");
-        userRegistrationRequestDto.setPassword("1111");
-        userRegistrationRequestDto.setFirstName("alice");
-        userRegistrationRequestDto.setLastName("alison");
-        userRegistrationRequestDto.setRepeatPassword("1111");
-        userService.register(userRegistrationRequestDto);
-
         UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
-        userLoginRequestDto.setPassword(userRegistrationRequestDto.getPassword());
-        userLoginRequestDto.setEmail(userRegistrationRequestDto.getEmail());
+        userLoginRequestDto.setPassword("1234");
+        userLoginRequestDto.setEmail("admin@gmail.com");
         UserLoginResponseDto authenticatedUser = authenticationService.authenticate(userLoginRequestDto);
         String token = authenticatedUser.token();
 
         List<User> users = userRepository.findAll();
-        User alice = users.get(1);
+        User admin = users.get(0);
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(alice.getEmail());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(admin.getEmail());
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
@@ -119,7 +119,7 @@ public class RentalControllerTest {
                                 .content(jsonRequest)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer " + token)
-                                .with(SecurityMockMvcRequestPostProcessors.authentication(authentication))
+                                .principal(authentication)
                 )
                 .andExpect(status().isOk())
                 .andReturn();
@@ -131,7 +131,141 @@ public class RentalControllerTest {
         Assertions.assertNotNull(actual.getId());
         EqualsBuilder.reflectionEquals(expected, actual, "id");
 
-        carRepository.deleteById(cars.get(0).getId());
+        carRepository.deleteById(actual.getCarId());
         rentalRepository.deleteById(actual.getId());
+    }
+
+    @Test
+    @DisplayName("Find all user rentals, should return all user's rentals")
+    @Sql(scripts = {
+            "classpath:database/car/01-add-one-car-to-database.sql"
+    },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    public void findAllUserRentals_ByUserId_ShouldReturnAllRentals() throws Exception {
+        List<Car> cars = carRepository.findAll();
+
+        List<User> users = userRepository.findAll();
+        User admin = users.get(0);
+
+        Rental rental = new Rental();
+        rental.setCar(cars.get(0));
+        rental.setRentalDate(LocalDateTime.of(
+                2024, 3, 8, 5, 5, 0)
+        );
+        rental.setReturnDate(LocalDateTime.of(
+                2024, 4, 8, 5, 5, 0)
+        );
+        rental.setActualReturnDate(LocalDateTime.of(
+                2024, 4, 8, 5, 5, 0)
+        );
+        rental.setActive(false);
+        rental.setUser(admin);
+        Rental savedRental = rentalRepository.save(rental);
+
+        UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
+        userLoginRequestDto.setPassword("1234");
+        userLoginRequestDto.setEmail("admin@gmail.com");
+        UserLoginResponseDto authenticatedUser = authenticationService.authenticate(userLoginRequestDto);
+        String token = authenticatedUser.token();
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(admin.getEmail());
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
+
+        RentalForUserResponseDto responseDto = new RentalForUserResponseDto();
+        responseDto.setRentalDate(rental.getRentalDate());
+        responseDto.setCarId(rental.getCar().getId());
+        responseDto.setReturnDate(rental.getReturnDate());
+        responseDto.setActualReturnDate(rental.getActualReturnDate());
+
+        List<RentalForUserResponseDto> expected = List.of(responseDto);
+
+
+                MvcResult result = mockMvc.perform(
+                        get("/api/rentals/my")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer " + token)
+                                .principal(authentication)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        RentalForUserResponseDto[] actual = objectMapper.readValue(
+                result.getResponse().getContentAsByteArray(), RentalForUserResponseDto[].class);
+
+        Assertions.assertNotNull(actual);
+        Assertions.assertNotNull(actual[0].getId());
+        Assertions.assertEquals(expected.size(), actual.length);
+        Assertions.assertEquals(expected.get(0).getCarId(), actual[0].getCarId());
+        Assertions.assertEquals(expected.get(0).getRentalDate(), actual[0].getRentalDate());
+
+        carRepository.deleteById(expected.get(0).getCarId());
+        rentalRepository.deleteById(savedRental.getId());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "admin", roles = {"MANAGER"})
+    @DisplayName("Search rentals by userId and isActive, should return all valid rentals")
+    @Sql(scripts = {
+            "classpath:database/car/01-add-one-car-to-database.sql"
+    },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    public void searchRentals_ByUserIdAndIsActive_ShouldReturnAllRentals() throws Exception {
+        Long userId = 1L;
+        boolean isActive = false;
+
+        List<Car> cars = carRepository.findAll();
+
+        List<User> users = userRepository.findAll();
+        User admin = users.get(0);
+
+        Rental rental = new Rental();
+        rental.setCar(cars.get(0));
+        rental.setRentalDate(LocalDateTime.of(
+                2024, 3, 8, 5, 5, 0)
+        );
+        rental.setReturnDate(LocalDateTime.of(
+                2024, 4, 8, 5, 5, 0)
+        );
+        rental.setActualReturnDate(LocalDateTime.of(
+                2024, 4, 8, 5, 5, 0)
+        );
+        rental.setActive(false);
+        rental.setUser(admin);
+        Rental savedRental = rentalRepository.save(rental);
+
+        RentalResponseDto responseDto = new RentalResponseDto();
+        responseDto.setId(savedRental.getId());
+        responseDto.setRentalDate(rental.getRentalDate());
+        responseDto.setCarId(rental.getCar().getId());
+        responseDto.setReturnDate(rental.getReturnDate());
+        responseDto.setActualReturnDate(rental.getActualReturnDate());
+        responseDto.setActive(isActive);
+        responseDto.setUserId(userId);
+
+        List<RentalResponseDto> expected = List.of(responseDto);
+
+        MvcResult result = mockMvc.perform(
+                        get("/api/rentals/search")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        RentalResponseDto[] actual = objectMapper.readValue(
+                result.getResponse().getContentAsByteArray(), RentalResponseDto[].class);
+
+        Assertions.assertNotNull(actual);
+        Assertions.assertNotNull(actual[0].getId());
+        Assertions.assertEquals(expected.size(), actual.length);
+        Assertions.assertEquals(expected.get(0).getCarId(), actual[0].getCarId());
+        Assertions.assertEquals(expected.get(0).getRentalDate(), actual[0].getRentalDate());
+        Assertions.assertEquals(expected.get(0).getUserId(), actual[0].getUserId());
+
+        carRepository.deleteById(expected.get(0).getCarId());
+        rentalRepository.deleteById(savedRental.getId());
     }
 }

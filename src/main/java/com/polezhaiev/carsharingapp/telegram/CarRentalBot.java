@@ -17,6 +17,7 @@ public class CarRentalBot extends TelegramLongPollingBot {
     @Value("${bot.token}")
     private String token;
 
+    @Value("${chat.id}")
     private long chatId;
 
     @Override
