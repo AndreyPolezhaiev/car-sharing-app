@@ -1,6 +1,5 @@
 package com.polezhaiev.carsharingapp.service.rental;
 
-import com.polezhaiev.carsharingapp.dto.car.CarDto;
 import com.polezhaiev.carsharingapp.dto.rental.RentalForUserResponseDto;
 import com.polezhaiev.carsharingapp.dto.rental.RentalRequestDto;
 import com.polezhaiev.carsharingapp.dto.rental.RentalResponseDto;
@@ -8,7 +7,6 @@ import com.polezhaiev.carsharingapp.dto.rental.RentalSearchParametersDto;
 import com.polezhaiev.carsharingapp.dto.rental.RentalSetActualDateRequestDto;
 import com.polezhaiev.carsharingapp.mapper.RentalMapper;
 import com.polezhaiev.carsharingapp.model.Car;
-import com.polezhaiev.carsharingapp.model.CarType;
 import com.polezhaiev.carsharingapp.model.Rental;
 import com.polezhaiev.carsharingapp.model.User;
 import com.polezhaiev.carsharingapp.repository.car.CarRepository;
